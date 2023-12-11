@@ -68,6 +68,13 @@ export const getStaticProps: GetStaticProps = async ({
   previewData,
 }) => {
   const data = await getPostAndMorePosts(params?.slug, preview, previewData)
+  const pattern = new RegExp('<a ?.*? href="(.*?'+process.env.WORDPRESS_DOMAIN+'.*?)".*?>.*?<\/a>', 'g')
+  const matcher = data.post.content.matchAll(pattern)
+
+  for (let match of Array.from(matcher)) {
+    const url = match[1].replace(process.env.WORDPRESS_DOMAIN, process.env.NEXTJS_DOMAIN+'/posts')
+    data.post.content = data.post.content.replaceAll(match[1], url)
+  }
 
   return {
     props: {
