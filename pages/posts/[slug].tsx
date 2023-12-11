@@ -68,11 +68,11 @@ export const getStaticProps: GetStaticProps = async ({
   previewData,
 }) => {
   const data = await getPostAndMorePosts(params?.slug, preview, previewData)
-  const reg = /<a ?.*? href="(.*?multi-directory\.local\/site-c.*?)".*?>.*?<\/a>/gi
-  const matcher = data.post.content.matchAll(reg)
+  const pattern = new RegExp('<a ?.*? href="(.*?'+process.env.WORDPRESS_DOMAIN+'.*?)".*?>.*?<\/a>', 'g')
+  const matcher = data.post.content.matchAll(pattern)
 
   for (let match of Array.from(matcher)) {
-    const url = match[1].replace('multi-directory.local/site-c', 'localhost:3000/posts')
+    const url = match[1].replace(process.env.WORDPRESS_DOMAIN, process.env.NEXTJS_DOMAIN+'/posts')
     data.post.content = data.post.content.replaceAll(match[1], url)
   }
 
