@@ -68,6 +68,13 @@ export const getStaticProps: GetStaticProps = async ({
   previewData,
 }) => {
   const data = await getPostAndMorePosts(params?.slug, preview, previewData)
+  const reg = /<a ?.*? href="(.*?multi-directory\.local\/site-c.*?)".*?>.*?<\/a>/gi
+  const matcher = data.post.content.matchAll(reg)
+
+  for (let match of Array.from(matcher)) {
+    const url = match[1].replace('multi-directory.local/site-c', 'localhost:3000/posts')
+    data.post.content = data.post.content.replaceAll(match[1], url)
+  }
 
   return {
     props: {
